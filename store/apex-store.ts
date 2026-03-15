@@ -182,6 +182,14 @@ export const useApexStore = create<ApexStore>()(
       // 7. Compute latency
       const latencyMs = Math.round(performance.now() - t0);
 
+      const newLogEntry: LogEntry = {
+        id: event.id,
+        timestamp: clockStr,
+        message: logMsg,
+        type: 'EXECUTION',
+        color: delta >= 0 ? '#00ff88' : '#ff3b5c',
+      };
+
       set(s => ({
         athletes: {
           ...s.athletes,
@@ -201,13 +209,7 @@ export const useApexStore = create<ApexStore>()(
         gameEvents: [event, ...s.gameEvents].slice(0, 100),
         orderBook: [...newOrders, ...s.orderBook].slice(0, 20),
         tickCount: s.tickCount + 1,
-        systemLog: [{
-          id: event.id,
-          timestamp: clockStr,
-          message: logMsg,
-          type: 'EXECUTION',
-          color: delta >= 0 ? '#00ff88' : '#ff3b5c',
-        }, ...s.systemLog].slice(0, 80),
+        systemLog: [newLogEntry, ...s.systemLog].slice(0, 80),
         latencies: [latencyMs, ...s.latencies].slice(0, 60),
       }));
 
